@@ -1,0 +1,25 @@
+# Хранит слово, состояние слова, количество попыток, названные буквы.
+ 
+class Round
+  attr_accessor :word, :turns_left, :used_letters, :current_state
+
+  def initialize(word)
+    self.turns_left = 12
+    self.used_letters = []
+    self.word = word
+    self.current_state = []
+    word.split("").each do |i|
+      self.current_state << "_ "
+    end
+  end
+
+  def print_state
+    puts current_state.join.strip
+  end
+
+  def print_used
+    used = []
+    used_letters.each {|i| used << "#{i} "}
+    puts used.join.strip
+  end
+end
