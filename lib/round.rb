@@ -22,4 +22,11 @@ class Round
     used_letters.each {|i| used << "#{i} "}
     puts used.join.strip
   end
+
+  def change_state(array, letter)
+    array.each do |i|
+      self.current_state[i] = "#{letter.capitalize} "
+    end
+    self.used_letters << letter
+  end
 end
