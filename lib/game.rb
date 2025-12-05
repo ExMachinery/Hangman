@@ -22,54 +22,70 @@ class Game
     
     # A code for game savefile pick here
     
+    # MAIN GAME LOOP START
     put "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."
     engine.start_round(player)
+    
+    play = true
+    until !play
+      if engine.turns? != 0
+        puts "You have #{engine.turns?} turns left. Name a letter or type '1' to save and exit."
+        puts "=================="
+        puts "Word looks like this right now:"
+        puts engine.state?
+        puts "=================="
+        puts "Letter you have used:"
+        puts engine.used?
+        puts "=================="
 
-    if engine.round.turns_left != 0
-      engine.round.turns_left -= 1
-      puts "You have #{engine.round.turns_left} turns left. Name a letter or type '1' to save and exit."
-      puts "=================="
-      puts "Word looks like this right now:"
-      engine.round.print_state
-      puts "=================="
-      puts "Letter you have used:"
-      engine.round.print_used
-      puts "=================="
-      
-      # Guess validation (It should be a method)
-      valid = false
-      result = nil
-      until valid
-        guess = gets.chomp
+        # Result reaction
+        guess = validate_turn
         if guess == 1
-          valid = true
-          # Saving game code here. Saving condition.
-        elsif guess.match?(/^[a-zA-Z]$/)
-          guess = guess.downcase
-          if engine.round.used_letters.include?(guess)
-            puts "Letter used. Take one more shot."
-          else
-            valid = true
-            result = engine.process_turn(guess)
-          end
+          engine.process_result(nil)                           #SAVE CONDITION
         else
-          puts 'Come again?' 
+          result = engine.process_turn(guess)
+          if result
+            puts "You're god damn right!"
+            if engine.win?
+              play = false
+              puts "You can live. For now."
+              engine.process_result(true)                      #WINNING CONDITION
+            end
+          else
+            puts "You shot. You missed."
+          end
         end
+      else 
+        puts "You lost. You hanged. Not sorry."
+        engine.process_result(false)                           #LOOSING CONDITION
       end
+    end
+    # MAIN GAME LOOP END
+    
+  end
 
-      # Result reaction
-      if result
-        puts "You're god damn right!"
-        if !engine.round.current_state.include?("_ ")
-          # Winning condition
+  def play_sequence
+    # Here should be a main gameloop.
+  end
+
+  def validate_turn
+    valid = false
+    until valid
+      guess = gets.chomp
+      if guess == 1
+        valid = true
+      elsif guess.match?(/^[a-zA-Z]$/)
+        guess = guess.downcase
+        if engine.round.used_letters.include?(guess)
+          puts "Letter used. Take one more shot."
+        else
+          valid = true
         end
       else
-        puts "You shot. You miss."
+        puts 'Come again?' 
       end
-    else 
-      puts "You lost. You hanged. Not sorry."
-      # Loosing condition
     end
+    guess
   end
 
 end

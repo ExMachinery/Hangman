@@ -1,7 +1,7 @@
 # Хранит слово, состояние слова, количество попыток, названные буквы.
  
 class Round
-  attr_accessor :word, :turns_left, :used_letters, :current_state
+  attr_accessor :word, :turns_left, :used_letters, :current_state, :win
 
   def initialize(word)
     self.turns_left = 12
@@ -13,19 +13,9 @@ class Round
     end
   end
 
-  def print_state
-    puts current_state.join.strip
-  end
-
-  def print_used
-    used = []
-    used_letters.each {|i| used << "#{i} "}
-    puts used.join.strip
-  end
-
   def change_state(array, letter)
     array.each do |i|
-      self.current_state[i] = "#{letter.capitalize} "
+      self.current_state[i] = "#{letter.upcase} "
     end
     self.used_letters << letter
   end
