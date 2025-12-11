@@ -3,6 +3,12 @@ require_relative 'player'
 require_relative 'worldbank'
 require_relative 'round'
 
+# 1. Communicate with player
+# 2. Input validation
+# ===========
+# To do:
+# 1. Picking existing nickname
+# 2. Loading save file
 
 class Game
   attr_accessor :player, :engine
@@ -22,7 +28,29 @@ class Game
     
     # A code for game savefile pick here
     
-    # MAIN GAME LOOP START
+    # New game
+    play = true
+    until play == false
+      play_sequence
+      valid = false
+      until valid
+        puts "One more? Type 'Y' for another round, 'n' for exit."
+        one_more = gets.chomp
+        if one_more == "Y"
+          valid = true
+          break
+        elsif one_more == "n"
+          puts "Fine. See you."
+          valid = true
+          play = false
+        else 
+          puts "You had one job, #{player.name}... You cant just #{one_more}-ing your way through."
+        end
+      end
+    end
+  end
+
+  def play_sequence
     put "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."
     engine.start_round(player)
     
@@ -34,13 +62,13 @@ class Game
         puts "Word looks like this right now:"
         puts engine.state?
         puts "=================="
-        puts "Letter you have used:"
+        puts "Letters you have used:"
         puts engine.used?
         puts "=================="
 
         # Result reaction
         guess = validate_turn
-        if guess == 1
+        if guess == "1"
           engine.process_result(nil)                           #SAVE CONDITION
         else
           result = engine.process_turn(guess)
@@ -60,19 +88,14 @@ class Game
         engine.process_result(false)                           #LOOSING CONDITION
       end
     end
-    # MAIN GAME LOOP END
-    
   end
 
-  def play_sequence
-    # Here should be a main gameloop.
-  end
-
+  # Валидация хода. Отсеивается уже использованный ряд букв и обрабатывается комманда сохранения ("1")
   def validate_turn
     valid = false
     until valid
       guess = gets.chomp
-      if guess == 1
+      if guess == "1"
         valid = true
       elsif guess.match?(/^[a-zA-Z]$/)
         guess = guess.downcase
