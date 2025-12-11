@@ -44,7 +44,7 @@ class Game
           valid = true
           play = false
         else 
-          puts "You had one job, #{player.name}... You cant just #{one_more}-ing your way through."
+          puts "You had one job, #{player.name}... You can't just #{one_more}-ing your way out."
         end
       end
     end

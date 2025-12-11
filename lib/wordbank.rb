@@ -15,9 +15,8 @@ class WordBank
 
   def pick_word(solved_words)
     self.word = nil
-    unless solved_words.include?(word)
-      self.word = word_list.sample
-    end
+    proxy_array = self.word_list - solved_words
+    self.word = proxy_array.sample
     word
   end
 end
