@@ -1,7 +1,5 @@
-# Занимается выдачей слов.
-
 class WordBank
-  attr_accessor :word_list, :word
+  attr_accessor :word_list
   def initialize
     self.word_list = []
     File.foreach("./lib/google-10000-english-no-swears.txt") do |line|
@@ -13,9 +11,8 @@ class WordBank
   end
 
   def pick_word(solved_words)
-    self.word = nil
     proxy_array = self.word_list - solved_words
-    self.word = proxy_array.sample
+    word = proxy_array.sample
     word
   end
 end

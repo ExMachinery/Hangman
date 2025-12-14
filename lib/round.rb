@@ -1,5 +1,3 @@
-# Хранит слово, состояние слова, количество попыток, названные буквы.
- 
 class Round
   attr_accessor :word, :turns_left, :used_letters, :current_state, :win
 

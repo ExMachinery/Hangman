@@ -28,6 +28,11 @@ class Engine
     self.player = player
   end
 
+  # ACCEPT: Player letter from Game.
+  # RETURN: 
+  #   FALSE: If its wrong letter
+  #   TRUE: If its right
+  # Also substract turns.
   def process_turn(letter)
     round.turns_left -= 1
     work_array = []
@@ -54,11 +59,11 @@ class Engine
   #   FALSE: Word not guessed yet.
   #   TRUE: Word guessed.
   def win?
-    check = round.current_state.include?("_ ")
+    check = !round.current_state.include?("_ ")
     check
   end
 
-  # Закрывает раунд по результатам. Вписывает очки игроку.
+  # Close round results. Saves player's score.
   def process_result(result)
     if result 
       round.win = result
@@ -74,13 +79,13 @@ class Engine
     self.round = nil
   end
 
-  # RETURN: Строка с текущим состоянием слова
+  # RETURN: this round current word state
   def state?
     state = round.current_state.join.strip
     state
   end
 
-  # RETURN: Стока использованных букв.
+  # RETURN: this round used letters 
   def used?
     used = []
     round.used_letters.each {|i| used << "#{i} "}

@@ -6,7 +6,7 @@ require_relative 'round'
 # 1. Communicate with player
 # 2. Input validation
 # ===========
-# NEXT STEP: Testing the main round logic
+# NEXT STEP: Picking existing nickname logic.
 # ===========
 # To do:
 # 1. Picking existing nickname
@@ -53,10 +53,10 @@ class Game
   end
 
   def play_sequence
-    put "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."
-    engine.start_round(player)
+    puts "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."
     
     play = true
+    engine.start_round(player)
     until !play
       if engine.turns? != 0
         puts "You have #{engine.turns?} turns left. Name a letter or type '1' to save and exit."
@@ -72,6 +72,7 @@ class Game
         guess = validate_turn
         if guess == "1"
           engine.process_result(nil)                           #SAVE CONDITION
+          play = false
         else
           result = engine.process_turn(guess)
           if result
@@ -88,11 +89,12 @@ class Game
       else 
         puts "You lost. You hanged. Not sorry."
         engine.process_result(false)                           #LOOSING CONDITION
+        play = false
       end
     end
   end
 
-  # Валидация хода. Отсеивается уже использованный ряд букв и обрабатывается комманда сохранения ("1")
+  # Turn validation. Sort out used letters and catch an Save Command ("1")
   def validate_turn
     valid = false
     until valid
