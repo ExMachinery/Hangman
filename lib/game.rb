@@ -1,10 +1,12 @@
 require_relative 'engine'
 require_relative 'player'
-require_relative 'worldbank'
+require_relative 'wordbank'
 require_relative 'round'
 
 # 1. Communicate with player
 # 2. Input validation
+# ===========
+# NEXT STEP: Testing the main round logic
 # ===========
 # To do:
 # 1. Picking existing nickname

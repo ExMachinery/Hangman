@@ -4,13 +4,12 @@ class WordBank
   attr_accessor :word_list, :word
   def initialize
     self.word_list = []
-    file = File.open("google-10000-english-no-swears.txt")
-    while line = file.gets do
-      if line.size >= 5 && line.size <= 12
-        self.word_list << line
+    File.foreach("./lib/google-10000-english-no-swears.txt") do |line|
+      item = line.chomp
+      if item.size >= 5 && item.size <= 12
+        self.word_list << item
       end
     end
-    file.close
   end
 
   def pick_word(solved_words)
