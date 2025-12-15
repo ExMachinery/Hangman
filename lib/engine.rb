@@ -10,6 +10,8 @@ require_relative 'player'
 #   TRUE: If letter is in word.
 #=============================
 # To do:
+# 1.1 Rewrite methods which use `player` with player acceptance as a parameter
+# 1.2 Rewrite `.process_trun` as a sequence of select and map methods.
 # 1. For `.process_result`: save file creation.
 #   - Serialize round
 #   - Save it to players dir

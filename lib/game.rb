@@ -114,5 +114,4 @@ class Game
     end
     guess
   end
-
 end
