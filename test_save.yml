@@ -1,0 +1,6 @@
+--- !ruby/object:GameState
+player_name: Alice
+score: 100
+weapon: !ruby/object:Weapon
+  name: Excalibur
+  damage: 50

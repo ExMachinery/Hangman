@@ -19,7 +19,7 @@ require_relative 'player'
  
 
 class Engine
-  attr_accessor :word, :round, :bank, :player
+  attr_accessor :word, :round, :bank
   def initialize
     self.bank = WordBank.new
   end
@@ -27,7 +27,6 @@ class Engine
   def start_round(player)
     self.word = bank.pick_word(player.solved_words)
     self.round = Round.new(word)
-    self.player = player
   end
 
   # ACCEPT: Player letter from Game.
@@ -66,7 +65,7 @@ class Engine
   end
 
   # Close round results. Saves player's score.
-  def process_result(result)
+  def process_result(result, player)
     if result 
       round.win = result
       player.solved_words << word
@@ -77,7 +76,11 @@ class Engine
     elsif result == nil
       # Save condition
       # Serialize round
+      yaml_round = YAML.dump(round)
+      File.write("../accounts/#{player.name}/save.yaml", yaml_round)
     end
+    yaml_player = YAML.dump(player)
+    File.write("../accounts/#{player.name}/#{player.name}.yml", yaml_player)
     self.round = nil
   end
 
@@ -92,5 +95,11 @@ class Engine
     used = []
     round.used_letters.each {|i| used << "#{i} "}
     used.join.strip
+  end
+
+  # engine.round.used_letters.include?(guess)
+  def letter_used?(guess)
+    result = round.used_letters.include?(guess)
+    result
   end
 end

@@ -1,3 +1,5 @@
+require 'yaml'
+require 'fileutils'
 require_relative 'engine'
 require_relative 'player'
 require_relative 'wordbank'
@@ -13,26 +15,65 @@ require_relative 'round'
 # 2. Loading save file
 
 class Game
-  attr_accessor :player, :engine
+  attr_accessor :player, :engine, :accounts
 
   def initialize
     self.engine = Engine.new
   end
 
   def play
-    puts 'This is Hangman game. Got name?'
+    puts 'This is Hangman game. First time?'
+    valid = false
+    until valid
+      puts 'Check if you on the list and tell me your number. Or just type "First time" to create new account.'
+      self.accounts = account_list
+      
+      input = gets.chomp
+      if input.downcase == "first time"
+        create_new_player
+        valid = true
+      elsif input.match?(/^[d+]$/)
+        # Вынесено в метод `loading_sequence`. Метод не дописан.
+        # После загрузки игрока, требуется метод, проверяющий, есть ли у него онгоинг сохранения и предложение о загрузке их.
+      end
+    end
 
-    # A code for existing nickname pick here
+    # Validate and create a new Player. 
+    def create_new_player
+      puts "Ah... A new guy. What is your name?"
+      nickname_is_free = false
+      until nickname_is_free
+        name = gets.chomp
+        if accounts.include?(name)
+          puts "This guy was hanged. You're ain't. Try again with another name."
+        elsif name == ""
+          puts "Mr. Nobody? You have a body, and we're going to hang it, funny man. Just name the body."
+        else
+          nickname_is_free = true
+          self.player = Player.new(name)
+          FileUtils.makedirs("./accounts/#{player.name}")
+          yaml_player = YAML.dump(player)
+          File.write("../accounts/#{player.name}/#{player.name}.yml", yaml_player)
+        end
+      end
+    end
+    
+    # [WIP] Should load a Player object into the Game
+    def loading_sequence(input)
+      account_check = accounts[input.to_i]
+      if account_check == nil
+        false
+      else
+        # Требуется логика загрузки объекта
+      end
+    end
 
-    name = gets.chomp
-    self.player = Player.new(name)
-    puts "Hey, #{player.name}. First time?"
     
     # A code for game savefile pick here
     
     # New game
     play = true
-    until play == false
+    while play
       play_sequence
       valid = false
       until valid
@@ -57,7 +98,7 @@ class Game
     
     play = true
     engine.start_round(player)
-    until !play
+    while play
       if engine.turns? != 0
         puts "You have #{engine.turns?} turns left. Name a letter or type '1' to save and exit."
         puts "=================="
@@ -71,7 +112,7 @@ class Game
         # Result reaction
         guess = validate_turn
         if guess == "1"
-          engine.process_result(nil)                           #SAVE CONDITION
+          engine.process_result(nil, player)                           #SAVE CONDITION
           play = false
         else
           result = engine.process_turn(guess)
@@ -80,7 +121,7 @@ class Game
             if engine.win?
               play = false
               puts "You can live. For now."
-              engine.process_result(true)                      #WINNING CONDITION
+              engine.process_result(true, player)                      #WINNING CONDITION
             end
           else
             puts "You shot. You missed."
@@ -88,7 +129,7 @@ class Game
         end
       else 
         puts "You lost. You hanged. Not sorry."
-        engine.process_result(false)                           #LOOSING CONDITION
+        engine.process_result(false, player)                           #LOOSING CONDITION
         play = false
       end
     end
@@ -103,7 +144,7 @@ class Game
         valid = true
       elsif guess.match?(/^[a-zA-Z]$/)
         guess = guess.downcase
-        if engine.round.used_letters.include?(guess)
+        if engine.letter_used?(guess)
           puts "Letter used. Take one more shot."
         else
           valid = true
@@ -114,4 +155,21 @@ class Game
     end
     guess
   end
+
+  # Accounts array and printing
+  def account_list
+    accounts = Dir.children("/accounts")
+    i = 1
+    accounts.each do |acc|
+      puts "#{i}. #{acc}"
+      i += 1
+    end
+    accounts
+  end
+
+  def load_player_name(name)
+
+    
+  end
+
 end
