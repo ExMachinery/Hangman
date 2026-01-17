@@ -10,11 +10,6 @@ require_relative 'player'
 #   TRUE: If letter is in word.
 #=============================
 # To do:
-# 1.1 Rewrite methods which use `player` with player acceptance as a parameter
-# 1.2 Rewrite `.process_trun` as a sequence of select and map methods.
-# 1. For `.process_result`: save file creation.
-#   - Serialize round
-#   - Save it to players dir
 # 2. Method for load saved round
  
 
@@ -29,6 +24,13 @@ class Engine
     self.round = Round.new(word)
   end
 
+  # Method loads saved round by player name
+  def load_round(player)
+    save_file = File.read("../accounts/#{player.name}/save.yml")
+    self.round = YAML.load(save_file, permitted_classes: [Round])
+    self.word = round.word
+  end
+
   # ACCEPT: Player letter from Game.
   # RETURN: 
   #   FALSE: If its wrong letter
@@ -36,12 +38,7 @@ class Engine
   # Also substract turns.
   def process_turn(letter)
     round.turns_left -= 1
-    work_array = []
-    word.split("").each_with_index do |val, ind|
-      if val == letter
-        work_array << ind
-      end
-    end
+    work_array = word.split("").each_with_index.select { |val, ind| val == letter }.map { |val, ind| ind}
     if work_array.empty?
       round.used_letters << letter
       false
@@ -50,6 +47,8 @@ class Engine
       true
     end
   end
+
+
 
   # RETURN: How many turns left
   def turns?
@@ -60,7 +59,7 @@ class Engine
   #   FALSE: Word not guessed yet.
   #   TRUE: Word guessed.
   def win?
-    check = !round.current_state.include?("_ ")
+    check = !round.current_state.include?("_")
     check
   end
 
@@ -75,7 +74,6 @@ class Engine
       player.hanged += 1
     elsif result == nil
       # Save condition
-      # Serialize round
       yaml_round = YAML.dump(round)
       File.write("../accounts/#{player.name}/save.yaml", yaml_round)
     end
@@ -86,7 +84,7 @@ class Engine
 
   # RETURN: this round current word state
   def state?
-    state = round.current_state.join.strip
+    state = round.current_state.join("|")
     state
   end
 

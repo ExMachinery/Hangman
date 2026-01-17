@@ -33,43 +33,14 @@ class Game
         create_new_player
         valid = true
       elsif input.match?(/^[d+]$/)
-        # Вынесено в метод `loading_sequence`. Метод не дописан.
-        # После загрузки игрока, требуется метод, проверяющий, есть ли у него онгоинг сохранения и предложение о загрузке их.
-      end
-    end
-
-    # Validate and create a new Player. 
-    def create_new_player
-      puts "Ah... A new guy. What is your name?"
-      nickname_is_free = false
-      until nickname_is_free
-        name = gets.chomp
-        if accounts.include?(name)
-          puts "This guy was hanged. You're ain't. Try again with another name."
-        elsif name == ""
-          puts "Mr. Nobody? You have a body, and we're going to hang it, funny man. Just name the body."
+        if accounts[input.to_i] != nil
+          loading_sequence(input)
+          valid = true
         else
-          nickname_is_free = true
-          self.player = Player.new(name)
-          FileUtils.makedirs("./accounts/#{player.name}")
-          yaml_player = YAML.dump(player)
-          File.write("../accounts/#{player.name}/#{player.name}.yml", yaml_player)
+          puts "You'd better remember how to count and try again."
         end
       end
     end
-    
-    # [WIP] Should load a Player object into the Game
-    def loading_sequence(input)
-      account_check = accounts[input.to_i]
-      if account_check == nil
-        false
-      else
-        # Требуется логика загрузки объекта
-      end
-    end
-
-    
-    # A code for game savefile pick here
     
     # New game
     play = true
@@ -85,7 +56,7 @@ class Game
         elsif one_more == "n"
           puts "Fine. See you."
           valid = true
-          play = false
+          play = false       
         else 
           puts "You had one job, #{player.name}... You can't just #{one_more}-ing your way out."
         end
@@ -93,11 +64,57 @@ class Game
     end
   end
 
+  # Validate and create a new Player. 
+  def create_new_player
+    puts "Ah... A new guy. What is your name?"
+    nickname_is_free = false
+    until nickname_is_free
+      name = gets.chomp
+      if accounts.include?(name)
+        puts "This guy was hanged. You ain't. Try again with another name."
+      elsif name == ""
+        puts "Mr. Nobody? You have a body, and we're going to hang it, funny man. Just name the body."
+      else
+        nickname_is_free = true
+        self.player = Player.new(name)
+        FileUtils.makedirs("./accounts/#{player.name}")
+        yaml_player = YAML.dump(player)
+        File.write("../accounts/#{player.name}/#{player.name}.yml", yaml_player)
+      end
+    end
+  end
+
+  # [WIP] Should load a Player object into the Game
+  def loading_sequence(input)
+    player_name = accounts[input.to_i]
+    self.player = File.read("../accounts/#{player_name}/#{player_name}.yml")
+    if File.exist?("../accounts/#{player_name}}/save.yml")
+      puts "You have unfinished business. Type '1' for load saved game, or '2' if you want a fresh start."
+      
+      valid = false
+      until valid
+        choice = gets.chomp
+        if choice == "1"
+          valid = true
+          engine.load_round(player)
+        elsif choice == "2"
+          valid = true
+          File.delete("../accounts/#{player.name}/save.yml")
+        else
+          puts "Can't count to two? Maybe i should hang you and end your suffering right now..."
+        end
+      end
+    end
+  end 
+
   def play_sequence
-    puts "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."
-    
+    puts "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."    
     play = true
-    engine.start_round(player)
+
+    if !engine.round
+      engine.start_round(player)
+    end
+
     while play
       if engine.turns? != 0
         puts "You have #{engine.turns?} turns left. Name a letter or type '1' to save and exit."
@@ -166,10 +183,4 @@ class Game
     end
     accounts
   end
-
-  def load_player_name(name)
-
-    
-  end
-
 end

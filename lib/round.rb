@@ -6,9 +6,7 @@ class Round
     self.used_letters = []
     self.word = word
     self.current_state = []
-    word.split("").each do |i|
-      self.current_state << "_ "
-    end
+    word.split("").each { |i| @current_state << "_"}
   end
 
   def change_state(array, letter)
