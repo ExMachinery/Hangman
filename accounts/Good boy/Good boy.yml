@@ -1,0 +1,5 @@
+--- !ruby/object:Player
+name: Good boy
+solved_words: []
+wins: 0
+hanged: 2

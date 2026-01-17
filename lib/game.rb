@@ -32,13 +32,13 @@ class Game
       if input.downcase == "first time"
         create_new_player
         valid = true
-      elsif input.match?(/^[d+]$/)
-        if accounts[input.to_i] != nil
+      elsif input.match?(/\A\d+\z/)
+        if accounts[input.to_i - 1] != nil
           loading_sequence(input)
           valid = true
-        else
-          puts "You'd better remember how to count and try again."
         end
+      else
+        puts "You'd better remember how to count and try again."
       end
     end
     
@@ -79,16 +79,20 @@ class Game
         self.player = Player.new(name)
         FileUtils.makedirs("./accounts/#{player.name}")
         yaml_player = YAML.dump(player)
-        File.write("../accounts/#{player.name}/#{player.name}.yml", yaml_player)
+        File.write("./accounts/#{player.name}/#{player.name}.yml", yaml_player)
       end
     end
   end
 
   # [WIP] Should load a Player object into the Game
   def loading_sequence(input)
-    player_name = accounts[input.to_i]
-    self.player = File.read("../accounts/#{player_name}/#{player_name}.yml")
-    if File.exist?("../accounts/#{player_name}}/save.yml")
+    player_name = accounts[input.to_i - 1]
+    player_loaded = File.read("./accounts/#{player_name}/#{player_name}.yml")
+    self.player = YAML.load(player_loaded, permitted_classes: [Player])
+    puts "DEBUG!!! #{player.name}"
+    debug_var = File.exist?("./accounts/#{player_name}/save.yml")
+    puts "DEBUG!!! #{debug_var}"
+    if File.exist?("./accounts/#{player_name}/save.yml")
       puts "You have unfinished business. Type '1' for load saved game, or '2' if you want a fresh start."
       
       valid = false
@@ -99,7 +103,7 @@ class Game
           engine.load_round(player)
         elsif choice == "2"
           valid = true
-          File.delete("../accounts/#{player.name}/save.yml")
+          File.delete("./accounts/#{player.name}/save.yml")
         else
           puts "Can't count to two? Maybe i should hang you and end your suffering right now..."
         end
@@ -111,7 +115,7 @@ class Game
     puts "All right, lets hang around. You need to guess THE WORD! Or I'll hang you."    
     play = true
 
-    if !engine.round
+    if engine.round == nil
       engine.start_round(player)
     end
 
@@ -175,7 +179,7 @@ class Game
 
   # Accounts array and printing
   def account_list
-    accounts = Dir.children("/accounts")
+    accounts = Dir.children("./accounts")
     i = 1
     accounts.each do |acc|
       puts "#{i}. #{acc}"

@@ -1,0 +1,17 @@
+--- !ruby/object:Round
+turns_left: 9
+used_letters:
+- a
+- o
+- s
+word: messaging
+current_state:
+- _
+- _
+- 'S '
+- 'S '
+- 'A '
+- _
+- _
+- _
+- _

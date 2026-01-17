@@ -1,0 +1,14 @@
+--- !ruby/object:Round
+turns_left: 9
+used_letters:
+- a
+- o
+- e
+word: moscow
+current_state:
+- _
+- 'O '
+- _
+- _
+- 'O '
+- _

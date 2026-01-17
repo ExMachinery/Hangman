@@ -26,7 +26,7 @@ class Engine
 
   # Method loads saved round by player name
   def load_round(player)
-    save_file = File.read("../accounts/#{player.name}/save.yml")
+    save_file = File.read("./accounts/#{player.name}/save.yml")
     self.round = YAML.load(save_file, permitted_classes: [Round])
     self.word = round.word
   end
@@ -75,10 +75,10 @@ class Engine
     elsif result == nil
       # Save condition
       yaml_round = YAML.dump(round)
-      File.write("../accounts/#{player.name}/save.yaml", yaml_round)
+      File.write("./accounts/#{player.name}/save.yml", yaml_round)
     end
     yaml_player = YAML.dump(player)
-    File.write("../accounts/#{player.name}/#{player.name}.yml", yaml_player)
+    File.write("./accounts/#{player.name}/#{player.name}.yml", yaml_player)
     self.round = nil
   end
 
