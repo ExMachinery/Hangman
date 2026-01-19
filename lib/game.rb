@@ -45,8 +45,12 @@ class Game
     # New game
     play = true
     while play
-      play_sequence
+      result = play_sequence
       valid = false
+      if result == false
+        play = false
+        valid = true
+      end
       until valid
         puts "One more? Type 'Y' for another round, 'n' for exit."
         one_more = gets.chomp
@@ -62,6 +66,7 @@ class Game
         end
       end
     end
+    puts "Game over."
   end
 
   # Validate and create a new Player. 
@@ -89,9 +94,6 @@ class Game
     player_name = accounts[input.to_i - 1]
     player_loaded = File.read("./accounts/#{player_name}/#{player_name}.yml")
     self.player = YAML.load(player_loaded, permitted_classes: [Player])
-    puts "DEBUG!!! #{player.name}"
-    debug_var = File.exist?("./accounts/#{player_name}/save.yml")
-    puts "DEBUG!!! #{debug_var}"
     if File.exist?("./accounts/#{player_name}/save.yml")
       puts "You have unfinished business. Type '1' for load saved game, or '2' if you want a fresh start."
       
@@ -135,6 +137,7 @@ class Game
         if guess == "1"
           engine.process_result(nil, player)                           #SAVE CONDITION
           play = false
+          return false
         else
           result = engine.process_turn(guess)
           if result
@@ -143,6 +146,7 @@ class Game
               play = false
               puts "You can live. For now."
               engine.process_result(true, player)                      #WINNING CONDITION
+              return true
             end
           else
             puts "You shot. You missed."
@@ -152,6 +156,7 @@ class Game
         puts "You lost. You hanged. Not sorry."
         engine.process_result(false, player)                           #LOOSING CONDITION
         play = false
+        return true
       end
     end
   end

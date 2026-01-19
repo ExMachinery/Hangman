@@ -59,8 +59,7 @@ class Engine
   #   FALSE: Word not guessed yet.
   #   TRUE: Word guessed.
   def win?
-    check = !round.current_state.include?("_")
-    check
+    !round.current_state.include?("_")
   end
 
   # Close round results. Saves player's score.
